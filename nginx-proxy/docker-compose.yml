@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: nginx:1.24.0-alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    ports:
+      - ***:***
+      - ***:***
+      - ***:***
+    volumes:
+      - ./***/nginx.conf:/***/nginx/nginx.conf:ro
+      - ./***/proxy.conf:/***/nginx/includes/proxy.conf:ro
+      - /***/nginx/ssl/live/d***.com/fullchain.pem:/***/ssl/live/d***.com/fullchain.pem:ro
+      - /***/nginx/ssl/live/d***.com/privkey.pem:/***/ssl/live/d***.com/privkey.pem:ro
+      - /***/nginx/ssl/live/i***.com/fullchain.pem:/***/ssl/live/i***.com/fullchain.pem:ro
+      - /***/nginx/ssl/live/i***.com/privkey.pem:/***/ssl/live/i***.com/privkey.pem:ro
+      - /***/nginx/ssl/live/m***.com/fullchain.pem:/***/ssl/live/m***.com/fullchain.pem:ro
+      - /***/nginx/ssl/live/m***.com/privkey.pem:/***/ssl/live/m***.com/privkey.pem:ro
+      - /***/nginx/ssl/live/q***.com/fullchain.pem:/***/ssl/live/q***.com/fullchain.pem:ro
+      - /***/nginx/ssl/live/q***.com/privkey.pem:/***/ssl/live/q***.com/privkey.pem:ro
+      - /***-2022:/www/data/d***/xiaofeng-2022
+      - /***/web-***:/www/data/d***/web
+
+networks:
+  default:
+    name: t***
+    external: true
+

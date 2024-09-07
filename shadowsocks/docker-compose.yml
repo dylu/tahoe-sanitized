@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  shadowsocks:
+    container_name: shadowsocks
+    image: shadowsocks/shadowsocks-libev:v3.3.5
+    ports:
+      - "***:***/tcp"
+      - "***:***/udp"
+    environment:
+      - METHOD=***
+      - PASSWORD=***
+    restart: unless-stopped
+
+networks:
+  default:
+    name: t***
+    external: true

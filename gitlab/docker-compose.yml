@@ -1,0 +1,112 @@
+version: "3.8"
+services:
+
+  redis:
+    image: redis:6.0
+    container_name: gitlab-redis
+    restart: unless-stopped
+    command:
+      - --loglevel warning
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    volumes:
+      - /***/redis:/***/redis:Z
+
+  postgres:
+    image: postgres:9.6.20
+    container_name: gitlab-postgres
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    environment:
+      - POSTGRES_USER=***
+      - POSTGRES_PASSWORD=***
+      - POSTGRES_DB=***
+      - DB_EXTENSION=pg_trgm,btree_gist
+      #- DB_EXTENSION=pg_trgm
+    volumes:
+      - /***/postgres:/***/postgresql:Z
+
+  gitlab:
+    image: gitlab/gitlab-ce:14.10.5-ce.0
+    container_name: gitlab-main
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+    hostname: 'git.i***.com'
+    environment:
+
+      GITLAB_OMNIBUS_CONFIG: |
+        # external_url 'https://gitlab.example.com'
+        external_url 'http://git.p***.com'
+        gitlab_rails['time_zone'] = 'America/Los_Angeles'
+        gitlab_rails['gitlab_shell_ssh_port'] = ***
+        
+        gitlab_rails['db_adapter'] = '***'
+        gitlab_rails['db_database'] = '***'
+        gitlab_rails['db_username'] = '***'
+        gitlab_rails['db_password'] = '***'
+        gitlab_rails['db_port'] = '***'
+
+        gitlab_rails['redis_host'] = '***'
+        gitlab_rails['redis_port'] = '***'
+        gitlab_rails['redis_password'] = ***
+        # gitlab_rails['redis_database'] = 0
+
+        # Reduce the number of running workers to the minimum in order to reduce memory usage
+        sidekiq['max_concurrency'] = 8
+
+        puma['enable'] = ***
+        puma['port'] = ***
+        # puma['port'] = ***
+        puma['worker_processes'] = 2
+        puma['min_threads'] = 1
+        puma['max_threads'] = 2
+
+        # Turn off monitoring to reduce idle cpu and disk usage
+        prometheus['enable'] = false
+        prometheus_monitoring['enable'] = false
+
+
+        # MAILGUN
+        # gitlab_rails['smtp_enable'] = true
+        # gitlab_rails['smtp_address'] = "smtp.mailgun.org"
+        # gitlab_rails['smtp_port'] = 587
+        # gitlab_rails['smtp_authentication'] = "plain"
+        # gitlab_rails['smtp_enable_starttls_auto'] = true
+        # gitlab_rails['smtp_user_name'] = "***@mg.g***.com"
+        # gitlab_rails['smtp_password'] = "***"
+        # gitlab_rails['smtp_domain'] = "mg.g***.com"
+
+    
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    volumes:
+      - /***/gitlab/config:/***/gitlab:Z
+      - /***/gitlab/data:/***/gitlab:Z
+      - /***/gitlab/logs:/***/gitlab:Z
+
+volumes:
+  redis:
+  postgres:
+  config:
+  data:
+  logs:
+
+networks:
+  default:
+    name: ***
+    external: true

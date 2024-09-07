@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.5
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=***
+      - MYSQL_USER=***
+      - MYSQL_PASSWORD=***
+    volumes:
+      - /***/photoview/data/db:/var/lib/mysql
+
+  photoview:
+    image: viktorstrate/photoview:2.3
+    restart: always
+    container_name: photoview
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+
+    environment:
+      - PHOTOVIEW_DATABASE_DRIVER=***
+      - PHOTOVIEW_MYSQL_URL=***:***@tcp(db)/***
+      - PHOTOVIEW_LISTEN_IP=***
+      - PHOTOVIEW_LISTEN_PORT=***
+      - PHOTOVIEW_MEDIA_CACHE=/***/cache
+      
+      # Optional: If you are using Samba/CIFS-Share and experience problems with "directory not found"
+      # Enable the following Godebug
+      # - GODEBUG=asyncpreemptoff=1
+      
+      # Optional: To enable map related features, you need to create a mapbox token.
+      # A token can be generated for free here https://account.mapbox.com/access-tokens/
+      # It's a good idea to limit the scope of the token to your own domain, to prevent others from using it.
+      # - MAPBOX_TOKEN=<YOUR TOKEN HERE>
+      - MAPBOX_TOKEN=***
+
+    volumes:
+      - /tahoe/dockerdata/photoview/data/cache:/app/cache
+
+      # Change This: to the directory where your photos are located on your server.
+      # If the photos are located at `/home/user/photos`, then change this value
+      # to the following: `/home/user/photos:/photos:ro`.
+      # You can mount multiple paths, if your photos are spread across multiple directories.
+      - /***/photos:/***/shared:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+      - /***/homes/***/Photos/PhotoLibrary:/***:ro
+
+networks:
+  default:
+    name: t***
+    external: true

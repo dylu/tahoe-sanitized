@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  psono_db:
+    image: postgres:15.3
+    container_name: psono-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=***
+      - POSTGRES_USER=***
+      - POSTGRES_PASSWORD=***
+      - DB_EXTENSION=ltree
+      - DB_EXTENSION=***
+    volumes:
+      - /***/psono/data/postgres:/***/postgresql/data
+    ports:
+      - "***:***"
+
+  psono_server:
+    image: psono/psono-server-enterprise:4.0.20
+    container_name: psono-server
+    restart: unless-stopped
+    depends_on:
+      - psono_db
+    volumes:
+      - /***/psono/data/settings.yaml:/***/settings.yaml
+
+  psono_client:
+    image: psono/psono-client:3.1.4
+    container_name: psono-client
+    restart: unless-stopped
+    depends_on:
+      - psono_db
+      - psono_server
+
+  psono_admin:
+    image: psono/psono-admin-client:1.7.5
+    container_name: psono-admin
+    restart: unless-stopped
+    depends_on:
+      - psono_db
+      - psono_server
+
+networks:
+  default:
+    name: t***
+    external: true

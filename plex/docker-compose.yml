@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: plexinc/pms-docker:1.28.2.6151-914ddd2b3
+    container_name: plex-server
+    restart: unless-stopped
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    expose:
+      - '***/**p'
+      - '***/**p'
+      - '***/**p'
+      - '***/**p'
+      - '***/**p'
+      - '***/**p'
+    environment:
+      - TZ=America/Los_Angeles
+      - ADVERTISE_IP=https://dluray.i***.com/
+    volumes:
+      # If failing to start, may need to remove:
+      - /***/plex/config:/config
+      - /***/plex/transcode:/transcode
+      - /***/plex:/data
+      - /***/plex/photos:/photos
+
+networks:
+  default:
+    name: t***
+    external: true

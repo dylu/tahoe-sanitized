@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  nginx:
+    image: dlu-certbot:renew
+    container_name: nginx-proxy-certbot-renew
+    restart: 'no'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+        compress: 'false'
+    expose:
+      - '***'
+      - '***'
+    volumes:
+      - /***/nginx/ssl/live:/***/letsencrypt/live
+      - /***/nginx/ssl/archive:/***/letsencrypt/archive
+      - /***/nginx/ssl/accounts:/***/letsencrypt/accounts
+      - /***/nginx/ssl/keys:/***/letsencrypt/keys
+      - /***/nginx/ssl/renewal:/***/letsencrypt/renewal
+      - /***/nginx/ssl/renewal-hooks:/***/letsencrypt/renewal-hooks
+
+networks:
+  default:
+    external:
+      name: t***
+
+## Cron job:
+
+# docker-compose -f /***/certbot/renew/docker-compose.yml start | tee -a /***/nginx/ssl/logs/dlu-certbot-renew_$(date +'%Y_%m').log
+
+
+# docker run --name nginx-proxy-certbot-renew \
+#     --mount type=bind,source=/***/nginx/ssl/live,target=/***/letsencrypt/live \
+#     --mount type=bind,source=/***/nginx/ssl/archive,target=/***/letsencrypt/archive \
+#     --mount type=bind,source=/***/nginx/ssl/accounts,target=/***/letsencrypt/accounts \
+#     --mount type=bind,source=/***/nginx/ssl/renewal,target=/***/letsencrypt/renewal \
+#     --mount type=bind,source=/***/nginx/ssl/renewal-hooks,target=/***/letsencrypt/renewal-hooks \
+#     dlu-certbot:renew &>> /***/nginx/ssl/logs/$(date +'%Y_%m').log
